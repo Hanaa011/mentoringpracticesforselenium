@@ -11,12 +11,9 @@ import static java.lang.Thread.sleep;
 public class Task4 {
     public static void main(String[] args) {
 
-        // Set Chrome options (maximize window at launch)
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--start-maximized");
 
         // Launch Chrome browser
-        WebDriver driver = new ChromeDriver(options);
+        WebDriver driver = new ChromeDriver();
 
             // Open Google homepage
             driver.get("https://www.google.com/");
