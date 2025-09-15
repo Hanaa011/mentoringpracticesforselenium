@@ -6,6 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.time.Duration;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,23 +17,36 @@ public class Task1 {
     void windowHandleTest() {
         // Initialize WebDriver
         WebDriver driver = new ChromeDriver();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
         // Go to the main page
         driver.get("https://claruswaysda.github.io/");
 
+        // Save the original window
+        String originalWindow = driver.getWindowHandle();
+
         // Click on 'Window Handle'
         driver.findElement(By.linkText("Window Handle")).click();
 
-        // Click on 'Open Index Page' button
-        WebElement linkButton = driver.findElement(By.cssSelector("a[href='index.html']"));
-        linkButton.click();
-        // Get the original window handle
-        String originalWindow = driver.getWindowHandle();
+        // Switch to the new tab (Window Handle page)
+        for (String windowHandle : driver.getWindowHandles()) {
+            if (!windowHandle.equals(originalWindow)) {
+                driver.switchTo().window(windowHandle);
+                break;
+            }
+        }
 
-        // Switch to the new window
+        // Click on 'Open Index Page' button
+        WebElement linkButton = driver.findElement(By.id("openIndex"));
+        linkButton.click();
+
+        // Save the current (Window Handle) tab
+        String windowHandlePage = driver.getWindowHandle();
+
+        // Switch to the new tab (Index page)
         Set<String> allWindows = driver.getWindowHandles();
         for (String window : allWindows) {
-            if (!window.equals(originalWindow)) {
+            if (!window.equals(originalWindow) && !window.equals(windowHandlePage)) {
                 driver.switchTo().window(window);
                 break;
             }
@@ -42,11 +56,7 @@ public class Task1 {
         String currentUrl = driver.getCurrentUrl();
         assertEquals("https://claruswaysda.github.io/index.html", currentUrl, "URL verification failed!");
 
-        // Close the new window and switch back to the original
-        driver.close();
-        driver.switchTo().window(originalWindow);
-
-        // Close the original window
+        // Close all windows
         driver.quit();
     }
 }
